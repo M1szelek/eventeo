@@ -19,6 +19,7 @@ class CreateEntrantsTable extends Migration
             $table->string('surname');
             $table->string('phone');
             $table->integer('event_id');
+            $table->unique(['phone', 'event_id']);
             $table->timestamps();
         });
     }
