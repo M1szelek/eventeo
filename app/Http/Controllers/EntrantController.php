@@ -15,7 +15,7 @@ class EntrantController extends Controller
      */
     public function index()
     {
-
+        dd('meh');
     }
 
     /**
