@@ -16,7 +16,7 @@ class EntrantController extends Controller
      */
     public function index()
     {
-        dd('meh');
+
     }
 
     /**
@@ -27,6 +27,15 @@ class EntrantController extends Controller
      */
     public function store(Request $request)
     {
+
+        $request->validate([
+            'name' => 'required|max:255',
+            'surname' => 'required|max:255',
+            'phone' => 'required|max:9|unique_with:entrants,event_id',
+            'event_id' => 'required'
+        ],[
+            'phone.unique_with' => 'You are already registered to this event'
+        ]);
 
         $entrant = Entrant::create([
             'name' => $request->name,

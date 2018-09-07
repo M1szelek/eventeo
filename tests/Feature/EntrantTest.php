@@ -69,6 +69,14 @@ class EntrantTest extends TestCase
         );
 
         $response
-            ->assertStatus(500);
+            ->assertStatus(422)
+            ->assertJson([
+                "message" => "The given data was invalid.",
+                "errors" => [
+                    "phone" => [
+                        "You are already registered to this event"
+                    ]
+                ]
+            ]);
     }
 }

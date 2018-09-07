@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
@@ -46,6 +47,14 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+
+        switch(true){
+            case $exception instanceof QueryException:
+                return response()->json([
+                   'message' => 'User already registered'
+                ], 500);
+        }
+
         return parent::render($request, $exception);
     }
 }
