@@ -61,10 +61,6 @@ class EntrantTest extends TestCase
             'event_id' => 1
         ];
 
-        $jsonResponse = [
-            'id' => 1
-        ];
-
         $response = $this->json(
             'POST',
             '/api/entrants',
