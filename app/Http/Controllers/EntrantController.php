@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entrant;
 use App\Http\Resources\EntrantResource;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class EntrantController extends Controller
@@ -22,7 +23,7 @@ class EntrantController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
@@ -34,7 +35,9 @@ class EntrantController extends Controller
             'event_id' => $request->event_id
         ]);
 
-        return new EntrantResource($entrant);
+
+
+        return new jsonResponse(['id' => $entrant->id],201);
     }
 
     /**

@@ -20,12 +20,19 @@ class EntrantTest extends TestCase
         $this->assertTrue(true);
     }
 
-    public function testShouldSendRequestToApiEntrantsThenAddNewEntrantToDBThenReturnIdOfNewEntrant(){
+    public function testShouldSendRequestToApiEntrantsThenAddNewEntrantToDBThenReturnIdOfNewEntrant()
+    {
+
+
         $json = [
             'name' => 'Jan',
             'surname' => 'Kowalski',
             'phone' => '123456789',
             'event_id' => 1
+        ];
+
+        $jsonResponse = [
+            'id' => 1
         ];
 
         $response = $this->json(
@@ -37,8 +44,35 @@ class EntrantTest extends TestCase
 
         $response
             ->assertStatus(201)
-            ->assertExactJson(
-                $json
-            );
+            ->assertJson($jsonResponse);
+    }
+
+    public function testShouldThrowExceptionWhenTryingAddNotUniqueEntrant()
+    {
+        factory(\App\Entrant::class)->create([
+            'phone' => '123456789',
+            'event_id' => 1
+        ]);
+
+        $json = [
+            'name' => 'Jan',
+            'surname' => 'Kowalski',
+            'phone' => '123456789',
+            'event_id' => 1
+        ];
+
+        $jsonResponse = [
+            'id' => 1
+        ];
+
+        $response = $this->json(
+            'POST',
+            '/api/entrants',
+            $json
+
+        );
+
+        $response
+            ->assertStatus(500);
     }
 }
