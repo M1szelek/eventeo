@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Entrant;
 use App\Http\Resources\EntrantResource;
+use App\Rules\EventExists;
+use App\Rules\EventOverQuota;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -28,11 +30,16 @@ class EntrantController extends Controller
     public function store(Request $request)
     {
 
+
         $request->validate([
             'name' => 'required|max:255',
             'surname' => 'required|max:255',
             'phone' => 'required|max:9|unique_with:entrants,event_id',
-            'event_id' => 'required'
+            'event_id' => [
+                'required',
+                new EventExists,
+                new EventOverQuota
+            ]
         ],[
             'phone.unique_with' => 'You are already registered to this event'
         ]);

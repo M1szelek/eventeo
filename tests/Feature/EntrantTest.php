@@ -10,14 +10,10 @@ class EntrantTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * A basic test example.
-     *
-     * @return void
-     */
-    public function testExample()
+    protected function setUp()
     {
-        $this->assertTrue(true);
+        parent::setUp();
+        factory(\App\Event::class)->create();
     }
 
     public function testShouldSendRequestToApiEntrantsThenAddNewEntrantToDBThenReturnIdOfNewEntrant()
@@ -49,6 +45,8 @@ class EntrantTest extends TestCase
 
     public function testShouldReturnErrorWhenTryingAddNotUniqueEntrant()
     {
+
+
         factory(\App\Entrant::class)->create([
             'phone' => '123456789',
             'event_id' => 1
@@ -184,6 +182,98 @@ class EntrantTest extends TestCase
                 "errors" => [
                     "phone" => [
                         "The phone may not be greater than 9 characters."
+                    ]
+                ]
+            ]);
+    }
+
+    public function testShouldReturnErrorWhenEventIdIsNotFilled()
+    {
+        $json = [
+            'name' => 'Kowalski',
+            'surname' => 'Kowalski',
+            'phone' => '123456789',
+        ];
+
+        $response = $this->json(
+            'POST',
+            '/api/entrants',
+            $json
+
+        );
+
+        $response
+            ->assertStatus(422)
+            ->assertJson([
+                "message" => "The given data was invalid.",
+                "errors" => [
+                    "event_id" => [
+                        "The event id field is required."
+                    ]
+                ]
+            ]);
+    }
+
+    public function testShouldReturnErrorWhenEventIdDoesNotExist()
+    {
+        $json = [
+            'name' => 'Kowalski',
+            'surname' => 'Kowalski',
+            'phone' => '123456789',
+            'event_id' => 10
+        ];
+
+        $response = $this->json(
+            'POST',
+            '/api/entrants',
+            $json
+
+        );
+
+        $response
+            ->assertStatus(422)
+            ->assertJson([
+                "message" => "The given data was invalid.",
+                "errors" => [
+                    "event_id" => [
+                        "Event does not exist"
+                    ]
+                ]
+            ]);
+    }
+
+    public function testShouldReturnErrorWhenEntrantTriesToSignToEventOverQuota()
+    {
+        factory(\App\Event::class)->create([
+            'id' => 100,
+            'quota' => 1
+        ]);
+
+        factory(\App\Entrant::class)->create([
+            'event_id' => 100
+        ]);
+
+        $json = [
+            'name' => 'Kowalski',
+            'surname' => 'Kowalski',
+            'phone' => '123456789',
+            'event_id' => 100
+        ];
+
+        $response = $this->json(
+            'POST',
+            '/api/entrants',
+            $json
+
+        );
+
+        $response
+            ->assertStatus(422)
+            ->assertJson([
+                "message" => "The given data was invalid.",
+                "errors" => [
+                    "event_id" => [
+                        "Event over quota."
                     ]
                 ]
             ]);
