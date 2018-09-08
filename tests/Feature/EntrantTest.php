@@ -47,7 +47,7 @@ class EntrantTest extends TestCase
             ->assertJson($jsonResponse);
     }
 
-    public function testShouldThrowExceptionWhenTryingAddNotUniqueEntrant()
+    public function testShouldReturnErrorWhenTryingAddNotUniqueEntrant()
     {
         factory(\App\Entrant::class)->create([
             'phone' => '123456789',
@@ -75,6 +75,115 @@ class EntrantTest extends TestCase
                 "errors" => [
                     "phone" => [
                         "You are already registered to this event"
+                    ]
+                ]
+            ]);
+    }
+
+    public function testShouldReturnErrorWhenNameIsNotFilled()
+    {
+        $json = [
+            'surname' => 'Kowalski',
+            'phone' => '123456789',
+            'event_id' => 1
+        ];
+
+        $response = $this->json(
+            'POST',
+            '/api/entrants',
+            $json
+
+        );
+
+        $response
+            ->assertStatus(422)
+            ->assertJson([
+                "message" => "The given data was invalid.",
+                "errors" => [
+                    "name" => [
+                        "The name field is required."
+                    ]
+                ]
+            ]);
+    }
+
+    public function testShouldReturnErrorWhenSurnameIsNotFilled()
+    {
+        $json = [
+            'name' => 'Kowalski',
+            'phone' => '123456789',
+            'event_id' => 1
+        ];
+
+        $response = $this->json(
+            'POST',
+            '/api/entrants',
+            $json
+
+        );
+
+        $response
+            ->assertStatus(422)
+            ->assertJson([
+                "message" => "The given data was invalid.",
+                "errors" => [
+                    "surname" => [
+                        "The surname field is required."
+                    ]
+                ]
+            ]);
+    }
+
+    public function testShouldReturnErrorWhenPhoneIsNotFilled()
+    {
+        $json = [
+            'name' => 'Kowalski',
+            'surname' => 'Kowalski',
+            'event_id' => 1
+        ];
+
+        $response = $this->json(
+            'POST',
+            '/api/entrants',
+            $json
+
+        );
+
+        $response
+            ->assertStatus(422)
+            ->assertJson([
+                "message" => "The given data was invalid.",
+                "errors" => [
+                    "phone" => [
+                        "The phone field is required."
+                    ]
+                ]
+            ]);
+    }
+
+    public function testShouldReturnErrorWhenPhoneIsLongerThan9Chars()
+    {
+        $json = [
+            'name' => 'Kowalski',
+            'surname' => 'Kowalski',
+            'phone' => '123456789012345',
+            'event_id' => 1
+        ];
+
+        $response = $this->json(
+            'POST',
+            '/api/entrants',
+            $json
+
+        );
+
+        $response
+            ->assertStatus(422)
+            ->assertJson([
+                "message" => "The given data was invalid.",
+                "errors" => [
+                    "phone" => [
+                        "The phone may not be greater than 9 characters."
                     ]
                 ]
             ]);
