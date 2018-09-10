@@ -6,6 +6,7 @@ use App\Entrant;
 use App\Http\Resources\EntrantResource;
 use App\Rules\EventExists;
 use App\Rules\EventOverQuota;
+use App\Rules\EventUpToDate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -36,8 +37,10 @@ class EntrantController extends Controller
             'surname' => 'required|max:255',
             'phone' => 'required|max:9|unique_with:entrants,event_id',
             'event_id' => [
+                'bail',
                 'required',
                 new EventExists,
+                new EventUpToDate,
                 new EventOverQuota
             ]
         ],[

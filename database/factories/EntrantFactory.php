@@ -9,5 +9,6 @@ $factory->define(App\Entrant::class, function (Faker $faker) {
         'phone' => $faker->phoneNumber,
         'event_id' => $faker->numberBetween(1,5)
 
+
     ];
 });

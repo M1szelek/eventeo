@@ -19,6 +19,8 @@ class CreateEventsTable extends Migration
             $table->text('description');
             $table->text('description_in_form');
             $table->integer('quota');
+            $table->dateTime('start_time');
+            $table->dateTime('end_time');
             $table->timestamps();
         });
     }

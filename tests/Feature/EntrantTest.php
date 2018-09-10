@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Carbon\Carbon;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -278,4 +279,74 @@ class EntrantTest extends TestCase
                 ]
             ]);
     }
+
+    public function testShouldReturnErrorWhenEntrantTriesToSignInBeforeTheStartOfEvent()
+    {
+        factory(\App\Event::class)->create([
+            'id' => 201,
+            'start_time' => Carbon::now()->addWeeks(1),
+            'end_time' => Carbon::now()->addMonths(1)
+        ]);
+
+        $json = [
+            'name' => 'Jan',
+            'surname' => 'Kowalski',
+            'phone' => '123456789',
+            'event_id' => 201
+        ];
+
+        $response = $this->json(
+            'POST',
+            '/api/entrants',
+            $json
+
+        );
+
+        $response
+            ->assertStatus(422)
+            ->assertJson([
+                "message" => "The given data was invalid.",
+                "errors" => [
+                    "event_id" => [
+                        "Event out of date."
+                    ]
+                ]
+            ]);
+    }
+
+    public function testShouldReturnErrorWhenEntrantTriesToSignInAfterTheEndOfEvent()
+    {
+        factory(\App\Event::class)->create([
+            'id' => 203,
+            'start_time' => Carbon::now()->subMonths(1),
+            'end_time' => Carbon::now()->subWeeks(1)
+        ]);
+
+        $json = [
+            'name' => 'Jan',
+            'surname' => 'Kowalski',
+            'phone' => '123456789',
+            'event_id' => 203
+        ];
+
+        $response = $this->json(
+            'POST',
+            '/api/entrants',
+            $json
+
+        );
+
+        $response
+            ->assertStatus(422)
+            ->assertJson([
+                "message" => "The given data was invalid.",
+                "errors" => [
+                    "event_id" => [
+                        "Event out of date."
+                    ]
+                ]
+            ]);
+    }
+
+
 }

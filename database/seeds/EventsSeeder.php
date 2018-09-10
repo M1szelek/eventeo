@@ -1,6 +1,7 @@
 <?php
 
 use App\Event;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
 class EventsSeeder extends Seeder
@@ -23,7 +24,9 @@ class EventsSeeder extends Seeder
                 'name' => $faker->sentence,
                 'description' => $faker->paragraph,
                 'description_in_form' => $faker->paragraph,
-                'quota' => $faker->numberBetween(10,100)
+                'quota' => $faker->numberBetween(10,100),
+                'start_time' => Carbon::parse('2000-01-01'),
+                'end_time' => Carbon::parse('2000-01-01')
             ]);
         }
     }
