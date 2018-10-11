@@ -47,12 +47,7 @@ class EntrantController extends Controller
             'phone.unique_with' => 'You are already registered to this event'
         ]);
 
-        $entrant = Entrant::create([
-            'name' => $request->name,
-            'surname' => $request->surname,
-            'phone' => $request->phone,
-            'event_id' => $request->event_id
-        ]);
+        $entrant = Entrant::create($request->all());
 
 
 
