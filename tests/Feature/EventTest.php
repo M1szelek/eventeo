@@ -154,4 +154,25 @@ class EventTest extends TestCase
         $response->
         assertStatus(422);
     }
+
+    public function testShouldReturnErrorWhenTryingAddWithInvalidDates()
+    {
+        $json = [
+            'name' => 'Lorem ipsum',
+            'description' => 'Lorem ipsum dolor sit amet',
+            'description_in_form' => 'Lorem ipsum dolor sit amet',
+            'start_time' => 'meh',
+            'end_time' => 'meh',
+            'quota' => '100'
+        ];
+
+        $response = $this->json(
+            'POST',
+            '/api/events',
+            $json
+        );
+
+        $response->
+        assertStatus(422);
+    }
 }
